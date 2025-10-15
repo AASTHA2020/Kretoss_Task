@@ -12,7 +12,8 @@ const io = new Server(server, {
     origin: [
       'http://localhost:3000',
       'https://kretoss-task.onrender.com',
-      
+      'https://kretoss-task-xadk.vercel.app',
+      process.env.FRONTEND_BASE_URL
     ].filter(Boolean),
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true
@@ -28,7 +29,7 @@ const corsOptions = {
   origin: [
     'http://localhost:3000',
     'https://kretoss-task.onrender.com',
-    'https://kretoss-task.vercel.app',
+    'https://kretoss-task-xadk.vercel.app',
     process.env.FRONTEND_BASE_URL
   ].filter(Boolean),
   credentials: true,
