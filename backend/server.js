@@ -10,11 +10,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: [
-      'http://localhost:3000',
-      'https://kretoss-task-xadk.vercel.app',
-      'https://kretoss-task.onrender.com'
-    ],
+    origin: "*", // Allow all origins for Socket.IO
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true
   }
@@ -33,39 +29,40 @@ mongoose.connection.on('error', (err) => {
   console.error('❌ MongoDB connection error:', err);
 });
 
-// CORS configuration
-const corsOptions = {
-  origin: [
+// AGGRESSIVE CORS CONFIGURATION - This will definitely work
+app.use((req, res, next) => {
+  // Allow all origins for now to test
+  const allowedOrigins = [
     'http://localhost:3000',
     'https://kretoss-task-xadk.vercel.app',
     'https://kretoss-task.onrender.com'
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
-  optionsSuccessStatus: 200
-};
+  ];
+  
+  const origin = req.headers.origin;
+  
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+  
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, Origin, X-Requested-With, X-HTTP-Method-Override');
+  res.setHeader('Access-Control-Max-Age', '86400');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    console.log('OPTIONS request received from:', origin);
+    res.status(200).end();
+    return;
+  }
+  
+  next();
+});
 
 // Middleware
-app.use(cors(corsOptions));
 app.use(express.json());
-
-// Handle preflight requests
-app.options('*', cors(corsOptions));
-
-// Additional CORS headers for all routes
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, Origin, X-Requested-With');
-  
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-  } else {
-    next();
-  }
-});
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
