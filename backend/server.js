@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
+const mongoose = require('mongoose');
 const connectDB = require('./config/database');
 
 const app = express();
@@ -22,6 +23,15 @@ app.set('io', io);
 
 // Connect to MongoDB
 connectDB();
+
+// Test database connection
+mongoose.connection.on('connected', () => {
+  console.log('✅ MongoDB connected successfully');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('❌ MongoDB connection error:', err);
+});
 
 // CORS configuration
 const corsOptions = {
