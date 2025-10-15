@@ -8,13 +8,47 @@ const connectDB = require('./config/database');
 const app = express();
 const server = http.createServer(app);
 
-// SIMPLIFIED CORS - Allow everything
+// COMPREHENSIVE CORS - Allow everything explicitly
 app.use(cors({
-  origin: "*",
+  origin: [
+    'http://localhost:3000',
+    'https://kretoss-task-xadk.vercel.app',
+    'https://kretoss-task.onrender.com',
+    '*'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With']
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'Accept', 
+    'Origin', 
+    'X-Requested-With',
+    'X-HTTP-Method-Override',
+    'Access-Control-Allow-Origin',
+    'Access-Control-Allow-Headers',
+    'Access-Control-Allow-Methods'
+  ],
+  exposedHeaders: ['Authorization'],
+  optionsSuccessStatus: 200
 }));
+
+// Additional CORS middleware for preflight requests
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, Origin, X-Requested-With, X-HTTP-Method-Override');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Max-Age', '86400');
+  
+  if (req.method === 'OPTIONS') {
+    console.log('🔍 OPTIONS request from:', req.headers.origin);
+    res.status(200).end();
+    return;
+  }
+  
+  next();
+});
 
 // Middleware
 app.use(express.json());
@@ -22,11 +56,24 @@ app.use(express.json());
 // Connect to MongoDB
 connectDB();
 
-// Socket.IO with simple CORS
+// Socket.IO with comprehensive CORS
 const io = new Server(server, {
   cors: {
-    origin: "*",
-    methods: ['GET', 'POST']
+    origin: [
+      'http://localhost:3000',
+      'https://kretoss-task-xadk.vercel.app',
+      'https://kretoss-task.onrender.com',
+      '*'
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    credentials: true,
+    allowedHeaders: [
+      'Content-Type', 
+      'Authorization', 
+      'Accept', 
+      'Origin', 
+      'X-Requested-With'
+    ]
   }
 });
 app.set('io', io);
