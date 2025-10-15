@@ -1,4 +1,4 @@
-import Axios, { AxiosRequestConfig } from 'axios';
+import Axios, { AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
 import Cookies from 'js-cookie';
 import { showLoader, hideLoader } from './loader';
 
@@ -22,7 +22,7 @@ instance.interceptors.request.use(
     const token = Cookies.get('token');
     if (token) {
       if (!config.headers) {
-        config.headers = {};
+        config.headers = {} as AxiosRequestHeaders;
       }
       config.headers.Authorization = `Bearer ${token}`;
     }
