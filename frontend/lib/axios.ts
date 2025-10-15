@@ -21,7 +21,9 @@ instance.interceptors.request.use(
     // Attach auth token for protected endpoints
     const token = Cookies.get('token');
     if (token) {
-      config.headers = config.headers || {};
+      if (!config.headers) {
+        config.headers = {} as any;
+      }
       if (!config.headers.Authorization) {
         config.headers.Authorization = `Bearer ${token}`;
       }

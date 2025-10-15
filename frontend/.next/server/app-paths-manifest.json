@@ -1,4 +1,12 @@
 {
-  "/not-found": "app/not-found.js",
-  "/page": "app/page.js"
+  "/_not-found": "app/_not-found.js",
+  "/page": "app/page.js",
+  "/admin-dashboard/page": "app/admin-dashboard/page.js",
+  "/cancel/page": "app/cancel/page.js",
+  "/success/page": "app/success/page.js",
+  "/user/page": "app/user/page.js",
+  "/user-dashboard/page": "app/user-dashboard/page.js",
+  "/admin/users/page": "app/admin/users/page.js",
+  "/admin/events/page": "app/admin/events/page.js",
+  "/events/[id]/page": "app/events/[id]/page.js"
 }
