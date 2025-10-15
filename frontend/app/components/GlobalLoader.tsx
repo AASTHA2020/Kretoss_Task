@@ -11,9 +11,16 @@ export default function GlobalLoader() {
   }, []);
 
   useEffect(() => {
+    // Set initial loader visibility
     setVisible(isLoaderVisible());
+
+    // Subscribe to loader updates
     const unsubscribe = subscribeLoader(handleLoaderChange);
-    return () => unsubscribe();
+
+    // Cleanup function must return a function
+    return () => {
+      unsubscribe(); // only function
+    };
   }, [handleLoaderChange]);
 
   if (!visible) return null;
