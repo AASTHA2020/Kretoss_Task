@@ -1,4 +1,4 @@
-import Axios, { AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
+import Axios, { InternalAxiosRequestConfig } from 'axios';
 import Cookies from 'js-cookie';
 import { showLoader, hideLoader } from './loader';
 
@@ -12,7 +12,7 @@ const instance = Axios.create({
 
 // Request interceptor
 instance.interceptors.request.use(
-  (config: AxiosRequestConfig) => {
+  (config: InternalAxiosRequestConfig) => {
     // Show loader for all requests except health checks
     if (!config.url?.includes('health')) {
       showLoader();
@@ -21,10 +21,10 @@ instance.interceptors.request.use(
     // Attach auth token for protected endpoints
     const token = Cookies.get('token');
     if (token) {
-      if (!config.headers) {
-        config.headers = {} as AxiosRequestHeaders;
-      }
-      config.headers.Authorization = `Bearer ${token}`;
+      // Create a new headers object if it doesn't exist
+      const headers: any = config.headers || {};
+      headers.Authorization = `Bearer ${token}`;
+      config.headers = headers;
     }
     
     return config;
