@@ -11,10 +11,9 @@ const io = new Server(server, {
   cors: {
     origin: [
       'http://localhost:3000',
-      'https://kretoss-task.onrender.com',
       'https://kretoss-task-xadk.vercel.app',
-      process.env.FRONTEND_BASE_URL
-    ].filter(Boolean),
+      'https://kretoss-task.onrender.com'
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true
   }
@@ -26,27 +25,15 @@ connectDB();
 
 // CORS configuration
 const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'https://kretoss-task.onrender.com',
-      'https://kretoss-task-xadk.vercel.app',
-      process.env.FRONTEND_BASE_URL
-    ].filter(Boolean);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      console.log('CORS blocked origin:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: [
+    'http://localhost:3000',
+    'https://kretoss-task-xadk.vercel.app',
+    'https://kretoss-task.onrender.com'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+  optionsSuccessStatus: 200
 };
 
 // Middleware
@@ -55,6 +42,20 @@ app.use(express.json());
 
 // Handle preflight requests
 app.options('*', cors(corsOptions));
+
+// Additional CORS headers for all routes
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, Origin, X-Requested-With');
+  
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
