@@ -2,11 +2,11 @@
   "/_not-found": "/_not-found",
   "/page": "/",
   "/admin-dashboard/page": "/admin-dashboard",
+  "/user/page": "/user",
   "/success/page": "/success",
   "/cancel/page": "/cancel",
-  "/user/page": "/user",
   "/user-dashboard/page": "/user-dashboard",
-  "/admin/users/page": "/admin/users",
   "/admin/events/page": "/admin/events",
+  "/admin/users/page": "/admin/users",
   "/events/[id]/page": "/events/[id]"
 }
