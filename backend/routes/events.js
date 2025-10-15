@@ -12,8 +12,11 @@ const router = express.Router();
 // @access  Public
 router.get('/', async (req, res) => {
   try {
-    const { page = 1, limit = 10, status = 'active' } = req.query;
+    const { page = 1, limit = 10, status = 'active', available = 'all' } = req.query;
     const query = status === 'all' ? {} : { status };
+    if (available === 'gt0') {
+      query.availableSeats = { $gt: 0 };
+    }
 
     const events = await Event.find(query)
       .populate('createdBy', 'name email')

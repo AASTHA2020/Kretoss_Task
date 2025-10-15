@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Event, eventsAPI } from '../../../lib/events';
 import { getAuthToken } from '../../../lib/auth';
+import axios from '../../../lib/axios';
 
 export default function EventDetailsPage() {
   const params = useParams();
@@ -47,22 +48,37 @@ export default function EventDetailsPage() {
         return;
       }
 
-      // Create checkout session
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/checkout/create-session`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ eventId: event?._id })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to start checkout');
+      if (!event) {
+        alert('Event not found');
+        return;
+      }
 
-      // Redirect to Stripe hosted checkout page
-      window.location.href = data.url;
+      if (event.availableSeats <= 0) {
+        alert('This event is sold out');
+        return;
+      }
+
+      console.log('Creating checkout session for event:', event._id);
+      
+      // Create checkout session
+      const response = await axios.post('/checkout/create-session', {
+        eventId: event._id
+      });
+      
+      console.log('Checkout session response:', response.data);
+      
+      if (response.data && response.data.url) {
+        console.log('Redirecting to Stripe checkout:', response.data.url);
+        // Redirect to Stripe hosted checkout page
+        window.location.href = response.data.url;
+      } else {
+        console.error('No checkout URL in response:', response.data);
+        throw new Error('No checkout URL received');
+      }
     } catch (err: any) {
-      alert(err.message || 'Failed to start checkout');
+      console.error('Payment error:', err);
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to start checkout';
+      alert(`Payment Error: ${errorMessage}`);
     }
   };
 

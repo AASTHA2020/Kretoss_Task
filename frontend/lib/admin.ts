@@ -11,6 +11,9 @@ export const adminAPI = {
     const response = await axios.get('/admin/stats');
     return response.data;
   },
+  getUsersCount: async () => (await axios.get('/admin/users/count')).data,
+  getEventsCount: async () => (await axios.get('/admin/events/count')).data,
+  getBookingsCount: async () => (await axios.get('/admin/bookings/count')).data,
 
   getEvents: async (page = 1, limit = 10, status = 'all'): Promise<{
     events: any[];

@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import axios from '../../lib/axios';
 
 export default function SuccessPage() {
   const params = useSearchParams();
@@ -10,12 +11,20 @@ export default function SuccessPage() {
   useEffect(() => {
     const confirm = async () => {
       const sessionId = params.get('session_id');
-      if (!sessionId) return;
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/checkout/confirm`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId })
-      });
+      console.log('Success page - Session ID:', sessionId);
+      
+      if (!sessionId) {
+        console.log('No session ID found');
+        return;
+      }
+      
+      try {
+        console.log('Confirming payment for session:', sessionId);
+        await axios.post('/checkout/confirm', { sessionId });
+        console.log('Payment confirmed successfully');
+      } catch (error) {
+        console.error('Payment confirmation error:', error);
+      }
     };
     confirm();
   }, [params]);

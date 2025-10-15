@@ -1,5 +1,6 @@
 import axios from './axios';
 import Cookies from 'js-cookie';
+import { useState, useEffect } from 'react';
 
 export interface User {
   id: string;
@@ -53,4 +54,36 @@ export const removeAuthToken = () => {
 
 export const getAuthToken = () => {
   return Cookies.get('token');
+};
+
+// Auth hook for components
+export const useAuth = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = getAuthToken();
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    // Verify token and get user data
+    const verifyToken = async () => {
+      try {
+        const response = await axios.get('/auth/me');
+        setUser(response.data.user);
+      } catch (error) {
+        console.error('Token verification failed:', error);
+        removeAuthToken();
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verifyToken();
+  }, []);
+
+  return { user, loading };
 };

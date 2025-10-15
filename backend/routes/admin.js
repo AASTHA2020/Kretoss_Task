@@ -28,6 +28,49 @@ router.get('/stats', adminAuth, async (req, res) => {
   }
 });
 
+// Individual count endpoints (handy for widgets/caching proxies)
+router.get('/users/count', adminAuth, async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    res.json({ totalUsers });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.get('/events/count', adminAuth, async (req, res) => {
+  try {
+    const totalEvents = await Event.countDocuments();
+    res.json({ totalEvents });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.get('/bookings/count', adminAuth, async (req, res) => {
+  try {
+    const totalBookings = await Booking.countDocuments({ status: 'paid' });
+    res.json({ totalBookings });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   GET /api/admin/users
+// @desc    Get all users for admin
+// @access  Private (Admin only)
+router.get('/users', adminAuth, async (req, res) => {
+  try {
+    const users = await User.find({}, 'name email role createdAt')
+      .sort({ createdAt: -1 });
+    
+    res.json({ users });
+  } catch (error) {
+    console.error('Get users error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // @route   GET /api/admin/events
 // @desc    Get all events for admin dashboard
 // @access  Private (Admin only)

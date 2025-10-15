@@ -10,10 +10,24 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 // Create Stripe Checkout session
 router.post('/create-session', auth, async (req, res) => {
   try {
+    console.log('Creating Stripe session for user:', req.user._id);
     const { eventId } = req.body;
+    console.log('Event ID:', eventId);
+    
     const event = await Event.findById(eventId);
-    if (!event) return res.status(404).json({ message: 'Event not found' });
-    if (event.availableSeats <= 0) return res.status(400).json({ message: 'Event is sold out' });
+    if (!event) {
+      console.log('Event not found:', eventId);
+      return res.status(404).json({ message: 'Event not found' });
+    }
+    
+    if (event.availableSeats <= 0) {
+      console.log('Event sold out:', event.title);
+      return res.status(400).json({ message: 'Event is sold out' });
+    }
+
+    console.log('Creating Stripe checkout session for event:', event.title);
+    console.log('Ticket price:', event.ticketPrice);
+    console.log('Frontend URL:', process.env.FRONTEND_BASE_URL);
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
@@ -39,6 +53,9 @@ router.post('/create-session', auth, async (req, res) => {
       }
     });
 
+    console.log('Stripe session created:', session.id);
+    console.log('Checkout URL:', session.url);
+
     // Create a pending booking to track session
     await Booking.create({
       user: req.user._id,
@@ -49,10 +66,11 @@ router.post('/create-session', auth, async (req, res) => {
       sessionId: session.id
     });
 
+    console.log('Pending booking created');
     res.json({ id: session.id, url: session.url });
   } catch (error) {
     console.error('Create session error:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error: ' + error.message });
   }
 });
 
@@ -60,17 +78,35 @@ router.post('/create-session', auth, async (req, res) => {
 router.post('/confirm', async (req, res) => {
   try {
     const { sessionId } = req.body;
-    if (!sessionId) return res.status(400).json({ message: 'sessionId is required' });
+    console.log('Confirming payment for session:', sessionId);
+    
+    if (!sessionId) {
+      console.log('No session ID provided');
+      return res.status(400).json({ message: 'sessionId is required' });
+    }
 
+    console.log('Retrieving Stripe session...');
     const session = await stripe.checkout.sessions.retrieve(sessionId);
+    console.log('Session payment status:', session.payment_status);
+    
     if (session.payment_status !== 'paid') {
+      console.log('Payment not completed, status:', session.payment_status);
       return res.status(400).json({ message: 'Payment not completed' });
     }
 
+    console.log('Finding booking for session:', sessionId);
     const booking = await Booking.findOne({ sessionId }).populate('event');
-    if (!booking) return res.status(404).json({ message: 'Booking not found' });
-    if (booking.status === 'paid') return res.json({ message: 'Already confirmed' });
+    if (!booking) {
+      console.log('Booking not found for session:', sessionId);
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+    
+    if (booking.status === 'paid') {
+      console.log('Booking already confirmed');
+      return res.json({ message: 'Already confirmed' });
+    }
 
+    console.log('Updating event seats for booking:', booking._id);
     // Decrement seats atomically if still available
     const updatedEvent = await Event.findOneAndUpdate(
       { _id: booking.event._id, availableSeats: { $gt: 0 } },
@@ -79,11 +115,13 @@ router.post('/confirm', async (req, res) => {
     );
 
     if (!updatedEvent) {
+      console.log('No seats available, marking booking as failed');
       booking.status = 'failed';
       await booking.save();
       return res.status(400).json({ message: 'No seats available' });
     }
 
+    console.log('Marking booking as paid');
     booking.status = 'paid';
     await booking.save();
 
