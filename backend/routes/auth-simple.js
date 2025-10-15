@@ -36,6 +36,29 @@ router.post('/login', (req, res) => {
   }
 });
 
+// Simple /me endpoint for testing
+router.get('/me', (req, res) => {
+  try {
+    console.log('🔍 /me endpoint called');
+    
+    // For testing, return a mock user
+    res.json({
+      user: {
+        id: 'test-user-id',
+        name: 'Test User',
+        email: 'test@test.com',
+        role: 'user'
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ /me error:', error);
+    res.status(500).json({ 
+      message: 'Server error: ' + error.message 
+    });
+  }
+});
+
 // Simple test route
 router.get('/test', (req, res) => {
   res.json({ 
