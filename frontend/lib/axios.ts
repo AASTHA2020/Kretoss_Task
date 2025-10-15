@@ -1,4 +1,4 @@
-import Axios from 'axios';
+import Axios, { AxiosRequestConfig } from 'axios';
 import Cookies from 'js-cookie';
 import { showLoader, hideLoader } from './loader';
 
@@ -12,7 +12,7 @@ const instance = Axios.create({
 
 // Request interceptor
 instance.interceptors.request.use(
-  (config) => {
+  (config: AxiosRequestConfig) => {
     // Show loader for all requests except health checks
     if (!config.url?.includes('health')) {
       showLoader();
@@ -22,11 +22,9 @@ instance.interceptors.request.use(
     const token = Cookies.get('token');
     if (token) {
       if (!config.headers) {
-        config.headers = {} as any;
+        config.headers = {};
       }
-      if (!config.headers.Authorization) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+      config.headers.Authorization = `Bearer ${token}`;
     }
     
     return config;
