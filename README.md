@@ -12,6 +12,9 @@ A modern event booking platform built with MERN stack (MongoDB, Express.js, Reac
 - 📅 Event Management (Admin)
 - 🖼️ Cloudinary Image Upload
 - 📊 Event CRUD Operations
+- ⚡ **Optimized Performance** - Smart loader system for slow API responses
+- 🎯 **Enhanced UX** - Real-time progress indicators and timeout warnings
+- 📈 **Performance Monitoring** - Request duration tracking and optimization
 
 ## Project Structure
 
@@ -33,7 +36,40 @@ A modern event booking platform built with MERN stack (MongoDB, Express.js, Reac
 └── README.md
 ```
 
-## Getting Started
+## 🧪 **Testing Credentials**
+
+### **✅ Admin Panel Testing:**
+- **Email**: `missaastha11@gmail.com`
+- **Password**: `Aastha@123`
+- **Role**: Admin
+- **Access**: Admin Dashboard, User Management, Event Management
+
+### **✅ User Panel Testing:**
+- **Email**: `peterparker@gmail.com`
+- **Password**: `peterparker`
+- **Role**: User
+- **Access**: User Dashboard, Event Booking, Profile Management
+
+## 🚀 **Quick Start (Recommended)**
+
+### **Run Both Backend & Frontend Together:**
+```bash
+# Install all dependencies
+npm run setup
+
+# Start both servers
+npm run dev
+```
+
+### **Access URLs:**
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:5000
+
+### **Test with Credentials:**
+1. **Admin Login**: `missaastha11@gmail.com` / `Aastha@123`
+2. **User Login**: `peterparker@gmail.com` / `peterparker`
+
+## Getting Started (Manual Setup)
 
 ### Prerequisites
 
@@ -95,6 +131,54 @@ npm run dev
 ```
 
 The frontend will be running on `http://localhost:3000`
+
+## 🧪 **Complete Testing Guide**
+
+### **✅ Testing Credentials:**
+
+**Admin Panel Testing:**
+- **Email**: `missaastha11@gmail.com`
+- **Password**: `Aastha@123`
+- **Role**: Admin
+- **Access**: Admin Dashboard, User Management, Event Management
+
+**User Panel Testing:**
+- **Email**: `peterparker@gmail.com`
+- **Password**: `peterparker`
+- **Role**: User
+- **Access**: User Dashboard, Event Booking, Profile Management
+
+### **✅ Step-by-Step Testing:**
+
+**Admin Testing:**
+1. **Go to**: http://localhost:3000
+2. **Click**: "Login as Admin" button
+3. **Enter**: `missaastha11@gmail.com` / `Aastha@1234`
+4. **Click**: Login
+5. **Expected**: Redirect to admin dashboard
+6. **Features**: User management, event management, analytics
+
+**User Testing:**
+1. **Go to**: http://localhost:3000
+2. **Click**: "Login as User" button
+3. **Enter**: `peterparker@gmail.com` / `peterparker`
+4. **Click**: Login
+5. **Expected**: Redirect to user dashboard
+6. **Features**: Event booking, profile management, bookings history
+
+### **✅ Performance Testing:**
+- **Loader System**: Click any button to see optimized loader
+- **Duration Counter**: Shows elapsed time (e.g., "3s elapsed")
+- **Timeout Warnings**: Appears after 3 seconds for slow responses
+- **Console Logs**: Check browser console for performance metrics
+- **Multiple Requests**: Handles concurrent API calls efficiently
+
+### **✅ API Performance Optimizations:**
+- **15-second timeout** for faster feedback
+- **3-second timeout warnings** for slow responses
+- **Request retry mechanism** for failed requests
+- **Connection pooling** for better performance
+- **Smart loader management** for concurrent requests
 
 ## Authentication Flow
 
